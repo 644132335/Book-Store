@@ -1,0 +1,15 @@
+body{
+    margin:0;
+    font-family: sans-serif;
+    background-color: wheat;
+}
+
+.login {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+
+#top{
+    text-align: center;
+}
