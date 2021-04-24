@@ -10,6 +10,16 @@ body{
     text-align: center;
   }
 
+.toIndex{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
 #top{
+    text-align: center;
+}
+
+#signup{
     text-align: center;
 }
