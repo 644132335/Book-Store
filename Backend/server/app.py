@@ -1,6 +1,7 @@
 from flask import Flask,render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from sqlalchemy import Table, Column, Integer, ForeignKey
 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookstore.db'
@@ -10,6 +11,11 @@ db = SQLAlchemy(app)
 class User(db.Model):
     username = db.Column(db.String(20),nullable=False, primary_key=True)
     password = db.Column(db.String(20),nullable=False)
+    name = db.Column(db.String(20))
+    address = db.Column(db.String(100))
+    email = db.Column(db.String(40))
+    trust = db.Column(db.Integer,default=0)
+    untrust = db.Column(db.Integer,default=0)
 
     def __repr__(self):
         return '<user %r>' % self.username
@@ -29,6 +35,20 @@ class Book(db.Model):
     language = db.Column(db.String(30),nullable=False,default="English")
     stock = db.Column(db.Integer,nullable=False)
     price = db.Column(db.Float,nullable=False)
+
+#author table
+class Author(db.Model):
+    __tablename__ = 'Author'
+
+    name = db.Column(db.String(30),nullable=False)
+    ISBN = db.Column(db.Integer,db.ForeignKey('book.ISBN', ondelete='CASCADE'),nullable=False)
+
+    __table_args__ = (
+    db.PrimaryKeyConstraint(
+        name, ISBN,
+        ),
+    )
+
 
 def managerInit():
     superMana=Manager(ManagerId="644132",ManagerName="Matt")
@@ -62,7 +82,7 @@ def delete(usr):
     try:
         db.session.delete(delete_usr)
         db.session.commit()
-        return redirect('/')
+        return redirect('/customerMana')
     except:
         return "There was an issue deleting user to database"
 
@@ -77,12 +97,26 @@ def update(usr):
 
         try:
             db.session.commit()
-            return redirect('/')
+            return redirect('/customerMana')
         except:
             return "There was an issue changing password to database"
         
     else:
         return render_template('update.html',task=usr_info)
+
+#update the stock
+@app.route('/updateb/<isbn>', methods=['GET','POST'])
+def updateb(isbn):
+    book=Book.query.get_or_404(isbn)
+
+    if request.method == 'POST':
+        book.stock=request.form['stock']
+        db.session.commit()
+        return redirect('/bookMana')
+       
+        
+    else:
+        return render_template('updateb.html',nbook=book)
 
 #delete all users
 @app.route('/deleteall')
@@ -104,9 +138,12 @@ def signup():
     if request.method == 'POST':
         user_info=request.form['username']
         user_pass=request.form['password']
+        name=request.form['name']
+        email=request.form['email']
+        address=request.form['address']
 
         if(user_info!="" and user_pass!="" ):
-            new_user=User(username=user_info,password=user_pass)
+            new_user=User(username=user_info,password=user_pass,name=name,email=email,address=address)
         else:
             return "Username and Password cannot be empty!"
 
@@ -160,26 +197,44 @@ def managerAdd():
 #book add
 @app.route('/bookAdd',methods=['POST','GET'])
 def bookAdd():
-    books=Book.query.all()
     if request.method == 'POST':
+
         title=request.form['title']
         ISBN=request.form['ISBN']
         page=request.form['page']
-        date=request.form['date']
+        date=datetime.strptime(request.form['date'],'%Y-%m-%d')
         publisher=request.form['publisher']
         language=request.form['language']
         stock=request.form['stock']
         price=request.form['price']
+        authors=request.form['authors']
+        inauthors=authors.split(",")
+
+        for author in inauthors:
+            newauthor=Author(ISBN=ISBN,name=author)
+            db.session.add(newauthor)
+            db.session.commit()
+        
         newbook=Book(ISBN=ISBN,title=title,page=page,date=date,publisher=publisher,language=language
         ,stock=stock,price=price)
         
         db.session.add(newbook)
         db.session.commit()
+        return redirect('/bookAdd')
 
     else:
-        return render_template('bookAdd.html',allBook=books)
+        return render_template('bookAdd.html')
 
+@app.route('/customerMana')
+def cusMana():
+    customers=User.query.all()
+    return render_template('customerManage.html',allCus=customers)
 
+@app.route('/bookMana')
+def bookMana():
+    authors=Author.query.all()
+    books=Book.query.all()
+    return render_template('bookManage.html',allbook=books,allAuthors=authors)
 
 if __name__ == "__main__":
     app.run(port=8000,debug=True)

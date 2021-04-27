@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+
+<h1 id="top">Customer Manage</h1>
+
+<div class="topnav">
+    <a href="/managerAdd">Add Manager</a>
+    <a href="/bookAdd">Add Book</a>
+    <a class="active" href="/customerMana">Customer Manage</a>
+    <a href="/bookMana">Book Manage</a>
+    
+</div>
+
+
+<div class=content>
+<table class=users>
+    <tr>
+        <th>User ID</th>
+        <th>Password</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Email</th>
+        <th>Trust</th>
+        <th>Untrust</th>
+        <th>Manage</th>
+
+    </tr>
+    {% for customer in allCus %}
+        <tr>
+            <td>{{ customer.username }}</td>
+            <td>{{ customer.password }}</td>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.address }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.trust }}</td>
+            <td>{{ customer.untrust }}</td>
+            <td>
+                <a href="/delete/{{customer.username}}">Delete User</a>
+                <br>
+                <a href="/update/{{customer.username}}">Change Password</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+</div>
+
+<br>
+<div class="toIndex"><form action='/' ><input type="submit" value="Logout"></form></div>
+
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+
+<h1 id="top">Book Manage</h1>
+
+<div class="topnav">
+    <a href="/managerAdd">Add Manager</a>
+    <a href="/bookAdd">Add Book</a>
+    <a href="/customerMana">Customer Manage</a>
+    <a class="active" href="/bookMana">Book Manage</a>
+    
+</div>
+
+<div class=content>
+<table class=users>
+    <tr>
+        <th>ISBN</th>
+        <th>Title</th>
+        <th>No.Page</th>
+        <th>Publisher</th>
+        <th>Language</th>
+        <th>Stock</th>
+        <th>Price</th>
+        <th>Author(s)</th>
+        <th>Manage</th>    
+
+    </tr>
+    {% for book in allbook %}
+        <tr>
+            <td>{{ book.ISBN }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.page }}</td>
+            <td>{{ book.publisher }}</td>
+            <td>{{ book.language }}</td>
+            <td>{{ book.stock }}</td>
+            <td>&#36 {{ book.price }}</td>
+            <td>{% for author in allAuthors %}
+                    {%if author.ISBN==book.ISBN%}
+                        {{author.name}},
+                    {%endif%}
+                {%endfor%}
+            </td>
+            <td>
+                <a href="/updateb/{{book.ISBN}}">Change Stock</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+</div>
+
+<br>
+<div class="toIndex"><form action='/' ><input type="submit" value="Logout"></form></div>
+
+
+{% endblock %}

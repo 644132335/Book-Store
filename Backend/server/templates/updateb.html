@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+
+<h1 id="top">Book Store</h1>
+<div class="login">
+<form action='/updateb/{{nbook.ISBN}}' method="POST">
+    <h3>Book Title: {{nbook.title}}</h3>
+    <h3>Stock: <input type="number" name="stock"></h3><br>
+    <input type="submit" value="Change Stock">
+</form>
+</div>
+
+
+{% endblock %}
