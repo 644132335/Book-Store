@@ -9,14 +9,15 @@
 <h1 id="top">Manager Login</h1>
 <div class="login">
 <form action='/managerLogin' method="POST">
-    <h3>ManagerID: <input type="text" name="managerID"></h3>
+    <h3>ManagerID: <input type="text" name="managerId"></h3>
     <h3><input type="submit" value="Log In"></h3>
 </form>
 </div>
+
 <div class="toIndex"><form action='/' ><input type="submit" value="Cancel"></form></div>
 
 {% for manager in allmana %}
-    <p>ManagerID:{{ manager.ManagerID }} <br>ManagerName:{{ manager.ManagerName }}
+    <p>ManagerID:{{ manager.ManagerId }} <br>ManagerName:{{ manager.ManagerName }}
          </p>
 {% endfor %}
 

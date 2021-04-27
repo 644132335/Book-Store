@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+
+<h1 id="top">Manager Control Panel</h1>
+
+<div class="topnav">
+    <a href="/managerAdd">Add Manager</a>
+    <a class="active" href="/bookAdd">Add Book</a>
+    <!-- <a href="#contact">Contact</a>
+    <a href="#about">About</a> -->
+</div>
+
+<div class="login">
+
+<form action='/bookAdd' method="POST">
+    <h3>Title: <input type="text" name="title"></h3>
+    <h3>ISBN: <input type="number" name="ISBN"></h3>
+    <h3>Page: <input type="number" name="page"></h3>
+    <h3>Date: <input type="date" name="date"></h3>
+    <h3>Publisher: <input type="text" name="publisher"></h3>
+    <h3>Language: <input type="text" name="language"></h3>
+    <h3>Stock: <input type="number" name="stock"></h3>
+    <h3>Price: <input type="number" step=0.01 name="price"></h3>
+    <input type="submit" value="Add Book">
+</form>
+</div>
+<br>
+<div class="toIndex"><form action='/' ><input type="submit" value="Logout"></form></div>
+
+<!-- {% for book in allBook %}
+<p>ManagerID:{{ manager.ManagerId }} <br>ManagerName:{{ manager.ManagerName }}<br></p>
+{% endfor %}
+
+{% endblock %} -->
