@@ -20,11 +20,11 @@
 <form action='/managerAdd' method="POST">
     <h3>Manager ID: <input type="text" name="managerId"></h3>
     <h3>Manager Name: <input type="text" name="managerName"></h3><br>
-    <input type="submit" value="Add">
+    <input class="button" type="submit" value="Add">
 </form>
 </div>
 <br>
-<div class="toIndex"><form action='/' ><input type="submit" value="Logout"></form></div>
+<div class="toIndex"><form action='/' ><input class="button" type="submit" value="Logout"></form></div>
 
 {% for manager in managers %}
 <p>ManagerID:{{ manager.ManagerId }} <br>ManagerName:{{ manager.ManagerName }}</p>

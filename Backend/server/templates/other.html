@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+<h1 id=top>All Users</h1>
+<h2 id=top>Username: {{user}}</h2>
+<div class="toIndex"><form action='/' >
+    <input class="button" type="submit" value="Logout"></form></div><br>
+<div class="topnav">
+    <a href="/main/{{user}}">Home</a>
+    <a href="/">Book Suggestions</a>
+    <a class="active" href="/alluser/{{user}}">Other People</a>
+    <a href="/orderInfo/{{user}}">My Orders</a>
+    <a href="/profile/{{user}}">My Profile</a>
+    
+</div>
+
+<div class="allBook">
+        {%for cus in alluser%}
+        <div class="eachbook">
+            <h3 id='eachb'>
+                Username: {{cus.username}}
+                <div class="toIndex"><form action='/oneuser/{{user}}/{{cus.username}}' >
+                    <input class="viewbutton" type="submit" value="View User"></form></div>
+            </h3>
+            
+        </div>
+        
+        {%endfor%}
+</div>
+
+
+{% endblock %}

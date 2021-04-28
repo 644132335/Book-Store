@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+<h1 id=top>Book Information</h1>
+<h2 id=top>Username: {{user}}</h2>
+<div class=bookinfo>
+        <h2 id=eachb>Title: {{nbook.title}}</h2>
+        <h3 id=eachb>
+        ISBN:{{nbook.ISBN}}<br>
+        Page:{{nbook.page}}<br>
+        Date:{{nbook.date}}<br>
+        Publisher:{{nbook.publisher}}<br>
+        Language:{{nbook.language}}<br>
+        Price: &#36 {{nbook.price}}
+        </h3>
+        
+        <div class="toIndex"><form action='/order/{{nbook.ISBN}}/{{user}}'>
+        <input class="viewbutton" type="submit" value="Order"></form>
+        </div><br>
+        <div class="toIndex"><form action='/main/{{user}}' >
+            <input class="viewbutton" type="submit" value="Back to Home"></form></div>
+</div>
+<br>
+<div class=bookinfo><h1 id=eachb>Comments:</h1></div><br>
+<div class=bookinfo><h1 id=eachb>write</h1></div>
+
+
+
+{% endblock %}

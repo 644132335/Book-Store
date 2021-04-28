@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+
+<h1 id="top">Book Store</h1>
+<h3 id="top">Username: {{user}}</h3>
+<div class="toIndex"><form action='/' ><input class="button" type="submit" value="Logout"></form></div><br>
+
+<div class="topnav">
+    <a href="/main/{{user}}">Home</a>
+    <a href="/">Book Suggestions</a>
+    <a href="/alluser/{{user}}">Other People</a>
+    <a class="active" href="/orderInfo/{{user}}">My Orders</a>
+    <a href="/profile/{{user}}">My Profile</a>
+    
+</div>
+
+<div class="allBook">
+    {%for order in allorder%}
+        <div class="eachbook">
+            {%if order.username==user%}
+            <h3 id='eachb'>
+                Order Number: {{order.ordernum}}<br>
+                Book: {{order.title}}<br>
+                Number of Copy: {{order.copynum}}<br>
+                Username: {{order.username}}<br>
+            </h3>
+            {%endif%}
+        </div>
+    {%endfor%}
+</div>
+
+
+
+
+{% endblock %}

@@ -7,6 +7,7 @@ app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookstore.db'
 db = SQLAlchemy(app)
 
+
 #user table
 class User(db.Model):
     username = db.Column(db.String(20),nullable=False, primary_key=True)
@@ -49,6 +50,14 @@ class Author(db.Model):
         ),
     )
 
+#order table
+class Order(db.Model):
+    ordernum = db.Column(db.Integer,nullable=False,primary_key=True)
+    title = db.Column(db.String(30),nullable=False)
+    copynum = db.Column(db.Integer,nullable=False)
+    username = db.Column(db.String(30),db.ForeignKey('user.username', ondelete='CASCADE'),nullable=False)
+
+
 
 def managerInit():
     superMana=Manager(ManagerId="644132",ManagerName="Matt")
@@ -67,7 +76,8 @@ def index():
 
         for user in users:
             if(user.username==user_info and user.password==user_pass):
-                return "successfully logged in!"
+                curuser=user.username
+                return redirect(url_for('main',id=user.username))
         return "no existing user, please sign up"
     else:
         users=User.query.all()
@@ -235,6 +245,60 @@ def bookMana():
     authors=Author.query.all()
     books=Book.query.all()
     return render_template('bookManage.html',allbook=books,allAuthors=authors)
+
+@app.route('/main/<id>')
+def main(id):
+    username=id
+    authors=Author.query.all()
+    books=Book.query.order_by(Book.date).all()
+    return render_template('main.html',allbook=books,allAuthors=authors,user=username)
+
+@app.route('/oneBook/<isbn>/<id>')
+def oneBook(isbn,id):
+    book=Book.query.get_or_404(isbn)
+    return render_template("singleBook.html",nbook=book,user=id)
+
+@app.route('/order/<isbn>/<id>',methods=['POST','GET'])
+def order(isbn,id):
+    if request.method=="POST":
+        nocop=request.form['nocopy']
+        nbook=Book.query.get_or_404(isbn)
+        if nbook.stock>=int(nocop):
+            nbook.stock-=int(nocop)
+            db.session.commit()
+        else:
+            return "book out of stock"
+        newOrder=Order(title=nbook.title,copynum=nocop,username=id)
+        db.session.add(newOrder)
+        db.session.commit()
+        return redirect(url_for('main',id=id))
+    else:
+        nbook=Book.query.get_or_404(isbn)
+        return render_template('order.html',book=nbook,user=id)
+
+@app.route('/orderInfo/<id>')
+def orderInfo(id):
+    orders=Order.query.all()
+    return render_template('OrderInfo.html',user=id,allorder=orders)
+
+@app.route('/profile/<id>')
+def profile(id):
+    profile=User.query.get_or_404(id)
+    return render_template('profile.html',user=profile)
+
+@app.route('/alluser/<id>')
+def alluser(id):
+    users=User.query.all()
+    return render_template('other.html',alluser=users,user=id)
+
+@app.route('/oneuser/<myid>/<viewid>',methods=['POST','GET'])
+def oneuser(myid,viewid):
+    viewi=User.query.get_or_404(viewid)
+    return render_template('oneprofile.html',myuser=myid,viewuser=viewi)
+
+@app.route('/addtrust/<myid>/viewid')
+def addtrust(myid,viewid):
+    return "add trust"
 
 if __name__ == "__main__":
     app.run(port=8000,debug=True)

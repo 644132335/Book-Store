@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+<h1 id=top>User Profile</h1>
+<h2 id=top>Username: {{myuser}}</h2>
+<div class="toIndex"><form action='/' >
+    <input class="button" type="submit" value="Logout"></form></div><br>
+<div class="topnav">
+    <a href="/main/{{myuser}}">Home</a>
+    <a href="/">Book Suggestions</a>
+    <a class="active" href="/alluser/{{myuser}}">Other People</a>
+    <a href="/orderInfo/{{myuser}}">My Orders</a>
+    <a href="/profile/{{myuser}}">My Profile</a>
+    
+</div>
+
+<div class="allBook">
+        <div class="eachbook">
+            <h3 id='eachb'>
+                Name: {{viewuser.name}}<br>
+                Address: {{viewuser.address}}<br>
+                Email: {{viewuser.email}}<br>
+                Trust: {{viewuser.trust}}<br>
+                Untrust:{{viewuser.untrust}}<br>
+            </h3>
+
+            <form action="/addtrust/{{myuser}}/{{viewuser.username}}">
+                <input class="viewbutton" name="trust" type="submit" value="Trust">
+            </form>
+                 
+        </div>
+        <div class="toIndex"><form action='/alluser/{{myuser}}' >
+            <input class="viewbutton" type="submit" value="Back View Others"></form></div>
+</div>
+
+
+{% endblock %}

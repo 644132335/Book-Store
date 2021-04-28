@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+
+<h1 id="top">Book Store</h1>
+<h3 id="top">Username: {{user}}</h3>
+<div class="toIndex"><form action='/' ><input class="button" type="submit" value="Logout"></form></div><br>
+
+<div class="topnav">
+    <a class="active" href="/main/{{user}}">Home</a>
+    <a href="/">Book Suggestions</a>
+    <a href="/alluser/{{user}}">Other People</a>
+    <a href="/orderInfo/{{user}}">My Orders</a>
+    <a href="/profile/{{user}}">My Profile</a>
+    
+</div>
+
+<div class="allBook">
+    {%for book in allbook%}
+        <div class="eachbook">
+            <h3 id='eachb'>
+                Title:{{book.title}}<br>
+                Publisher:{{book.publisher}}<br>
+                Language:{{book.language}}<br>
+                Date:{{book.date}}<br>
+                Author(s):
+                    {% for author in allAuthors %}
+                        {%if author.ISBN==book.ISBN%}
+                            {{author.name}},
+                        {%endif%}
+                    {%endfor%}<br>
+                {%if book.stock==0%}
+                    <h3 id='warning'>Out of Stock</h3>
+                {%endif%}
+            </h3>
+            
+            <div class="toIndex"><form action='/oneBook/{{book.ISBN}}/{{user}}'>
+            <input class="viewbutton" type="submit" value="View Book"></form>
+            </div><br>
+        </div>
+    {%endfor%}
+</div>
+
+
+
+
+{% endblock %}

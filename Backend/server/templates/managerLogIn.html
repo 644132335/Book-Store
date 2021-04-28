@@ -10,11 +10,11 @@
 <div class="login">
 <form action='/managerLogin' method="POST">
     <h3>ManagerID: <input type="text" name="managerId"></h3>
-    <h3><input type="submit" value="Log In"></h3>
+    <h3><input class="button" type="submit" value="Log In"></h3>
 </form>
 </div>
 
-<div class="toIndex"><form action='/' ><input type="submit" value="Cancel"></form></div>
+<div class="toIndex"><form action='/' ><input class="button" type="submit" value="Cancel"></form></div>
 
 {% for manager in allmana %}
     <p>ManagerID:{{ manager.ManagerId }} <br>ManagerName:{{ manager.ManagerName }}
