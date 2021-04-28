@@ -26,8 +26,62 @@
 </div>
 <br>
 <div class=bookinfo><h1 id=eachb>Comments:</h1></div><br>
-<div class=bookinfo><h1 id=eachb>write</h1></div>
+<div class=bookinfo><h1 id=eachb>Write Your Comment</h1>
+    <form action='/addcomment/{{user}}/{{nbook.ISBN}}' method="POST">
+        <h3 style="color: white;">
+        Rate the book: 
+        <select name="cscore" id="comment">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+        </select>
+    </h3>
+        <h3><input class='comment' type="text" name="text"></h3>
+        <input class="viewbutton" type="submit" value="Post">
+    </form>
+</div>
+<br>
 
+{%if allcom != None %}
+    {%for comment in allcom%}
+        {%if comment.ISBN==nbook.ISBN%}
+    <div class=bookinfo>
+        {%if user!=comment.username%}
+        <form action='/adduseful/{{comment.comment}}/{{nbook.ISBN}}/{{user}}' method="POST">
+            <h3 id=eachb>Useful Score: 
+            <select name="uscore" id="comment">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+            <input class="viewbutton" type="submit" value="Submit">
+            </h3>
+        </form>
+        {%endif%}
+        <h2 id=eachb>User: {{comment.username}}</h2>
+        <h3 id=eachb>
+        Comment Score: {{comment.comsocore}}<br>
+        Comment Text: {{comment.text}}<br>
+        ISBN: {{comment.ISBN}}
+        </h3>
+    </div><br>
+        {%endif%}
+    {%endfor%}
+
+{%else%}
+<div class=bookinfo>
+    <h2 id=eachb>No Comments yet!</h2>
+    
+</div><br>
+{%endif%}
 
 
 {% endblock %}

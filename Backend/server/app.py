@@ -57,7 +57,27 @@ class Order(db.Model):
     copynum = db.Column(db.Integer,nullable=False)
     username = db.Column(db.String(30),db.ForeignKey('user.username', ondelete='CASCADE'),nullable=False)
 
+#comment table
+class Comment(db.Model):
+    __tablename__ = 'comment'
+    comment = db.Column(db.Integer,primary_key=True)
+    ISBN = db.Column(db.Integer,db.ForeignKey('book.ISBN', ondelete='CASCADE'),nullable=False)
+    username = db.Column(db.String(20),db.ForeignKey('user.username', ondelete='CASCADE'),nullable=False)
+    text = db.Column(db.String(100))
+    usefulscore = db.Column(db.Integer,default=1)
+    comsocore = db.Column(db.Integer,default=5)
 
+    __table_args__ = (
+    db.UniqueConstraint(
+        ISBN, username
+        ),
+    )
+
+#useful score table
+class Usefulscore(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    score = db.Column(db.Integer,default=1)
+    comid = db.Column(db.String(20),db.ForeignKey('comment.comment', ondelete='CASCADE'),nullable=False)
 
 def managerInit():
     superMana=Manager(ManagerId="644132",ManagerName="Matt")
@@ -256,7 +276,8 @@ def main(id):
 @app.route('/oneBook/<isbn>/<id>')
 def oneBook(isbn,id):
     book=Book.query.get_or_404(isbn)
-    return render_template("singleBook.html",nbook=book,user=id)
+    comments=Comment.query.all()
+    return render_template("singleBook.html",nbook=book,user=id,allcom=comments)
 
 @app.route('/order/<isbn>/<id>',methods=['POST','GET'])
 def order(isbn,id):
@@ -295,10 +316,43 @@ def alluser(id):
 def oneuser(myid,viewid):
     viewi=User.query.get_or_404(viewid)
     return render_template('oneprofile.html',myuser=myid,viewuser=viewi)
-
-@app.route('/addtrust/<myid>/viewid')
+ 
+@app.route('/addtrust/<myid>/<viewid>')
 def addtrust(myid,viewid):
-    return "add trust"
+    viewi=User.query.get_or_404(viewid)
+    viewi.trust+=1
+    db.session.commit()
+    return redirect(url_for('oneuser',myid=myid,viewid=viewid))
+
+@app.route('/adduntrust/<myid>/<viewid>')
+def adduntrust(myid,viewid):
+    viewi=User.query.get_or_404(viewid)
+    viewi.untrust+=1
+    db.session.commit()
+    return redirect(url_for('oneuser',myid=myid,viewid=viewid))
+
+@app.route('/addcomment/<id>/<isbn>',methods=['POST','GET'])
+def addcomment(id,isbn):
+    if request.method=='POST':
+        cscore=request.form['cscore']
+        comment=request.form['text']
+        newcomment=Comment(ISBN=isbn,username=id,text=comment,comsocore=int(cscore))
+        db.session.add(newcomment)
+        db.session.commit()
+
+        return redirect(url_for('oneBook',isbn=isbn,id=id))
+    else:
+        return redirect(url_for('oneBook',isbn=isbn,id=id))
+
+@app.route('/adduseful/<comid>/<isbn>/<id>',methods=['POST','GET'])
+def adduseful(comid,isbn,id):
+    if request.method=="POST":
+        uscore=request.form['uscore']
+        newuseful=Usefulscore(score=uscore,comid=comid)
+        db.session.add(newuseful)
+        db.session.commit()
+        return redirect(url_for('oneBook',isbn=isbn,id=id))
+
 
 if __name__ == "__main__":
     app.run(port=8000,debug=True)
