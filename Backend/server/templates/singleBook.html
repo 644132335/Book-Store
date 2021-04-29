@@ -50,8 +50,15 @@
 </div>
 <br>
 
+<div class=bookinfo>
+    <form action='/oneBook/{{nbook.ISBN}}/{{user}}' method="POST">
+        <h3 style="color: white;">Top <input class=topn type="numer" name="topcom" value=3> Comments 
+            <input class="viewbutton" type="submit" value="Submit"></h3>
+    </form>
+</div>
+<br>
 {%if allcom != None %}
-    {%for comment in allcom%}
+    {%for comment in allcom%}     
         {%if comment.ISBN==nbook.ISBN%}
     <div class=bookinfo>
         {%if user!=comment.username%}
@@ -68,6 +75,7 @@
         {%endif%}
         <h2 id=eachb>User: {{comment.username}}</h2>
         <h3 id=eachb>
+        Average Useful Score: {{"%.2f"|format(comment.usefulscore)}}<br>
         Comment Score: {{comment.comsocore}}<br>
         Comment Text: {{comment.text}}<br>
         ISBN: {{comment.ISBN}}

@@ -11,31 +11,14 @@
 <div class="toIndex"><form action='/' ><input class="button" type="submit" value="Logout"></form></div><br>
 
 <div class="topnav">
-    <a class="active" href="/main/{{user}}">Home</a>
-    <a href="/bookSug/{{user}}">Book Suggestions</a>
+    <a href="/main/{{user}}">Home</a>
+    <a class="active" href="/bookSug/{{user}}">Book Suggestions</a>
     <a href="/alluser/{{user}}">Other People</a>
     <a href="/orderInfo/{{user}}">My Orders</a>
     <a href="/profile/{{user}}">My Profile</a>
     
 </div>
 <br>
-<div class="allBook">
-
-    <div class="eachbook">
-        
-        <form class="search" action='/main/{{user}}' method="POST">
-            <h3 style=color:white>Author: <input type="text" name="author"></h3>
-            <h3 style=color:white>Publisher: <input type="text" name="publisher"></h3>
-            <h3 style=color:white>Title: <input type="text" name="title"></h3>
-            <h3 style=color:white>Language: <input type="text" name="language"></h3>
-            <input class="viewbutton" type="submit" value="Search">
-        </form>
-        
-    </div>
-</div>
-<br>
-
-
 <div class="allBook">
     {%for book in allbook%}
         <div class="eachbook">
@@ -61,6 +44,10 @@
         </div>
     {%endfor%}
 </div>
+
+<br>
+
+
 
 
 

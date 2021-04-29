@@ -2,6 +2,7 @@ from flask import Flask,render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy import Table, Column, Integer, ForeignKey
+from sqlalchemy import func
 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookstore.db'
@@ -255,30 +256,64 @@ def bookAdd():
     else:
         return render_template('bookAdd.html')
 
+#customer management
 @app.route('/customerMana')
 def cusMana():
     customers=User.query.all()
     return render_template('customerManage.html',allCus=customers)
 
+#book management
 @app.route('/bookMana')
 def bookMana():
     authors=Author.query.all()
     books=Book.query.all()
     return render_template('bookManage.html',allbook=books,allAuthors=authors)
 
-@app.route('/main/<id>')
+#main page
+@app.route('/main/<id>',methods=['POST','GET'])
 def main(id):
-    username=id
-    authors=Author.query.all()
-    books=Book.query.order_by(Book.date).all()
-    return render_template('main.html',allbook=books,allAuthors=authors,user=username)
+    if request.method=='POST':
+        username=id
+        author=request.form['author']
+        publisher=request.form['publisher']
+        title=request.form['title']
+        language=request.form['language']
+        authors=Author.query.all()
+        #only title
+        newbooks=[]
+        if title!="":        
+            newbooks=Book.query.order_by(Book.date).filter(Book.title.like(title))
+        elif publisher!="":
+            newbooks=Book.query.order_by(Book.date).filter(Book.publisher.like(publisher))
+        elif language!="":
+            newbooks=Book.query.order_by(Book.date).filter(Book.language.like(language))
+        elif author!="":
+            authbooks=Author.query.filter(Author.name.like(author))
+            for auth in authbooks:
+                newbooks.append(Book.query.get_or_404(auth.ISBN))
+        else:
+            return redirect(url_for("main",id=username))
+        
+        return render_template('main.html',allbook=newbooks,allAuthors=authors,user=username)
 
-@app.route('/oneBook/<isbn>/<id>')
+    else:
+        username=id
+        authors=Author.query.all()
+        books=Book.query.order_by(Book.date).all()
+        return render_template('main.html',allbook=books,allAuthors=authors,user=username)
+
+#single book view
+@app.route('/oneBook/<isbn>/<id>',methods=['POST','GET'])
 def oneBook(isbn,id):
+    topn=len(Comment.query.all())
+    if request.method=='POST':
+        topn=int(request.form['topcom'])
+    
     book=Book.query.get_or_404(isbn)
-    comments=Comment.query.all()
-    return render_template("singleBook.html",nbook=book,user=id,allcom=comments)
+    comments=Comment.query.order_by(Comment.usefulscore.desc()).limit(topn).all()
+    return render_template("singleBook.html",nbook=book,user=id,allcom=comments,top=len(comments))
 
+#order a book
 @app.route('/order/<isbn>/<id>',methods=['POST','GET'])
 def order(isbn,id):
     if request.method=="POST":
@@ -297,26 +332,31 @@ def order(isbn,id):
         nbook=Book.query.get_or_404(isbn)
         return render_template('order.html',book=nbook,user=id)
 
+#order infomations
 @app.route('/orderInfo/<id>')
 def orderInfo(id):
     orders=Order.query.all()
     return render_template('OrderInfo.html',user=id,allorder=orders)
 
+#user profile
 @app.route('/profile/<id>')
 def profile(id):
     profile=User.query.get_or_404(id)
     return render_template('profile.html',user=profile)
 
+#all user
 @app.route('/alluser/<id>')
 def alluser(id):
     users=User.query.all()
     return render_template('other.html',alluser=users,user=id)
 
+#single user
 @app.route('/oneuser/<myid>/<viewid>',methods=['POST','GET'])
 def oneuser(myid,viewid):
     viewi=User.query.get_or_404(viewid)
     return render_template('oneprofile.html',myuser=myid,viewuser=viewi)
- 
+
+#add trust
 @app.route('/addtrust/<myid>/<viewid>')
 def addtrust(myid,viewid):
     viewi=User.query.get_or_404(viewid)
@@ -324,6 +364,7 @@ def addtrust(myid,viewid):
     db.session.commit()
     return redirect(url_for('oneuser',myid=myid,viewid=viewid))
 
+#add untrust
 @app.route('/adduntrust/<myid>/<viewid>')
 def adduntrust(myid,viewid):
     viewi=User.query.get_or_404(viewid)
@@ -331,6 +372,7 @@ def adduntrust(myid,viewid):
     db.session.commit()
     return redirect(url_for('oneuser',myid=myid,viewid=viewid))
 
+#add comment
 @app.route('/addcomment/<id>/<isbn>',methods=['POST','GET'])
 def addcomment(id,isbn):
     if request.method=='POST':
@@ -343,7 +385,7 @@ def addcomment(id,isbn):
         return redirect(url_for('oneBook',isbn=isbn,id=id))
     else:
         return redirect(url_for('oneBook',isbn=isbn,id=id))
-
+#add usefulscore
 @app.route('/adduseful/<comid>/<isbn>/<id>',methods=['POST','GET'])
 def adduseful(comid,isbn,id):
     if request.method=="POST":
@@ -351,8 +393,37 @@ def adduseful(comid,isbn,id):
         newuseful=Usefulscore(score=uscore,comid=comid)
         db.session.add(newuseful)
         db.session.commit()
-        return redirect(url_for('oneBook',isbn=isbn,id=id))
 
+        # get average score and pass it into comment table
+        avguseful=Usefulscore.query.with_entities(func.avg(Usefulscore.score)).filter(Usefulscore.comid==comid)
+        curcom=Comment.query.get_or_404(comid)
+        if avguseful!=None:
+            curcom.usefulscore=avguseful
+            db.session.commit()
+
+        return redirect(url_for('oneBook',isbn=isbn,id=id))
+#book suggestion
+@app.route('/bookSug/<id>')
+def booksug(id):
+    orderedbook=Order.query.filter(Order.username==id)
+    books=[]
+    for order in orderedbook:
+        books.extend(Book.query.filter(order.title==Book.title))
+    authors=Author.query.all()
+    return render_template('booksugg.html',allbook=books,user=id,allAuthors=authors)
+
+#stat
+@app.route('/stat',methods=['POST','GET'])
+def stat():
+    top=1
+    if request.method=="POST":
+        top=request.form["toppop"]
+    popb=Order.query.group_by(Order.title).order_by(func.sum(Order.copynum).desc()).limit(top)
+    
+    # learn join
+    
+
+    return render_template("stat.html",popordersb=popb,toppop=top)
 
 if __name__ == "__main__":
     app.run(port=8000,debug=True)
