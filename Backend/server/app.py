@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy import Table, Column, Integer, ForeignKey
 from sqlalchemy import func
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookstore.db'
@@ -94,12 +95,14 @@ def index():
         users=User.query.all()
         user_info=request.form['username']
         user_pass=request.form['password']
-
-        for user in users:
-            if(user.username==user_info and user.password==user_pass):
-                curuser=user.username
-                return redirect(url_for('main',id=user.username))
-        return "no existing user, please sign up"
+        user=User.query.filter(User.username==user_info).first()
+        if user:
+            if check_password_hash(user.password,user_pass):
+                return redirect(url_for('main',id=user_info))
+            else:
+                return "Password not mathcing"
+        else:
+            return "no existing user, please sign up"
     else:
         users=User.query.all()
         return render_template('index.html',tasks=users)
@@ -117,6 +120,23 @@ def delete(usr):
     except:
         return "There was an issue deleting user to database"
 
+#delete a book
+@app.route('/deleteb/<isbn>')    
+def deleteb(isbn):
+
+    delete_book=Book.query.get_or_404(isbn)
+    delete_author=Author.query.filter(isbn==Author.ISBN)
+    try:
+        db.session.delete(delete_book)
+        db.session.commit()
+        for author in delete_author:
+            db.session.delete(author)
+            db.session.commit()
+        
+        return redirect('/bookMana')
+    except:
+        return "There was an issue deleting user to database"
+
 
 #update the user password
 @app.route('/update/<usr>', methods=['GET','POST'])
@@ -124,7 +144,8 @@ def update(usr):
     usr_info=User.query.get_or_404(usr)
 
     if request.method == 'POST':
-        usr_info.password=request.form['password']
+        user_pass=request.form['password']
+        usr_info.password=generate_password_hash(user_pass)
 
         try:
             db.session.commit()
@@ -168,10 +189,11 @@ def deleteall():
 def signup():
     if request.method == 'POST':
         user_info=request.form['username']
-        user_pass=request.form['password']
+        user_pass1=request.form['password']
         name=request.form['name']
         email=request.form['email']
         address=request.form['address']
+        user_pass=generate_password_hash(user_pass1)
 
         if(user_info!="" and user_pass!="" ):
             new_user=User(username=user_info,password=user_pass,name=name,email=email,address=address)
@@ -310,8 +332,8 @@ def oneBook(isbn,id):
         topn=int(request.form['topcom'])
     
     book=Book.query.get_or_404(isbn)
-    comments=Comment.query.order_by(Comment.usefulscore.desc()).limit(topn).all()
-    return render_template("singleBook.html",nbook=book,user=id,allcom=comments,top=len(comments))
+    comments=Comment.query.filter(Comment.ISBN==book.ISBN).order_by(Comment.usefulscore.desc()).limit(topn)
+    return render_template("singleBook.html",nbook=book,user=id,allcom=comments)
 
 #order a book
 @app.route('/order/<isbn>/<id>',methods=['POST','GET'])
@@ -405,12 +427,25 @@ def adduseful(comid,isbn,id):
 #book suggestion
 @app.route('/bookSug/<id>')
 def booksug(id):
-    orderedbook=Order.query.filter(Order.username==id)
-    books=[]
-    for order in orderedbook:
-        books.extend(Book.query.filter(order.title==Book.title))
     authors=Author.query.all()
-    return render_template('booksugg.html',allbook=books,user=id,allAuthors=authors)
+    #most popular book
+    orderedbook=Order.query.group_by(Order.title).order_by(func.sum(Order.copynum).desc()).limit(1)
+    popbook=Book.query.filter(Book.title==orderedbook[0].title)
+    #most expensive book
+    expen=Book.query.order_by(Book.price.desc()).limit(1)
+    #cheapest book
+    cheap=Book.query.order_by(Book.price).limit(1)
+    #Largest book
+    large=Book.query.order_by(Book.page.desc()).limit(1)
+    #Latest book
+    new=Book.query.order_by(Book.date.desc()).limit(1)
+    #Oldest book
+    old=Book.query.order_by(Book.date).limit(1)
+
+    return render_template('booksugg.html',allbook=popbook,user=id,allAuthors=authors
+                            ,exp=expen[0],cheapbook=cheap[0],largebook=large[0],latest=new[0],oldest=old[0])
+    
+    
 
 #stat
 @app.route('/stat',methods=['POST','GET'])
@@ -418,12 +453,12 @@ def stat():
     top=1
     if request.method=="POST":
         top=request.form["toppop"]
+    #most popular book
     popb=Order.query.group_by(Order.title).order_by(func.sum(Order.copynum).desc()).limit(top)
-    
-    # learn join
-    
+    trustu=User.query.order_by(User.trust.desc()).limit(top)
 
-    return render_template("stat.html",popordersb=popb,toppop=top)
+
+    return render_template("stat.html",popordersb=popb,toppop=top,trust=trustu)
 
 if __name__ == "__main__":
     app.run(port=8000,debug=True)

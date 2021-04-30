@@ -47,7 +47,8 @@
                 {%endfor%}
             </td>
             <td>
-                <a href="/updateb/{{book.ISBN}}">Change Stock</a>
+                <a href="/updateb/{{book.ISBN}}">Change Stock</a><br>
+                <a href="/deleteb/{{book.ISBN}}">Delete</a>
             </td>
         </tr>
     {% endfor %}

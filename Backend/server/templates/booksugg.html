@@ -20,8 +20,10 @@
 </div>
 <br>
 <div class="allBook">
+    
     {%for book in allbook%}
         <div class="eachbook">
+            <h2 id='eachb'>Best Saled Book:</h2>
             <h3 id='eachb'>
                 Title:{{book.title}}<br>
                 Publisher:{{book.publisher}}<br>
@@ -43,11 +45,134 @@
             </div><br>
         </div>
     {%endfor%}
+</div><br>
+
+<div class="allBook">
+    <div class="eachbook">
+        <h2 id='eachb'>Most Expensive Book:</h2>
+        <h3 id='eachb'>
+            Title:{{exp.title}}<br>
+                    Publisher:{{exp.publisher}}<br>
+                    Language:{{exp.language}}<br>
+                    Date:{{exp.date}}<br>
+                    Author(s):
+                        {% for author in allAuthors %}
+                            {%if author.ISBN==exp.ISBN%}
+                                {{author.name}},
+                            {%endif%}
+                        {%endfor%}<br>
+                    {%if exp.stock==0%}
+                        <h3 id='warning'>Out of Stock</h3>
+                    {%endif%}
+        </h3>
+        
+        <div class="toIndex"><form action='/oneBook/{{exp.ISBN}}/{{user}}'>
+        <input class="viewbutton" type="submit" value="View Book"></form>
+        </div><br>
+    </div>
 </div>
 
 <br>
 
+<div class="allBook">
+    <div class="eachbook">
+        <h2 id='eachb'>Cheapest Book:</h2>
+        <h3 id='eachb'>
+            Title:{{cheapbook.title}}<br>
+                    Publisher:{{cheapbook.publisher}}<br>
+                    Language:{{cheapbook.language}}<br>
+                    Date:{{cheapbook.date}}<br>
+                    Author(s):
+                        {% for author in allAuthors %}
+                            {%if author.ISBN==cheapbook.ISBN%}
+                                {{author.name}},
+                            {%endif%}
+                        {%endfor%}<br>
+                    {%if cheapbook.stock==0%}
+                        <h3 id='warning'>Out of Stock</h3>
+                    {%endif%}
+        </h3>
+        
+        <div class="toIndex"><form action='/oneBook/{{cheapbook.ISBN}}/{{user}}'>
+        <input class="viewbutton" type="submit" value="View Book"></form>
+        </div><br>
+    </div>
+</div><br>
 
+<div class="allBook">
+    <div class="eachbook">
+        <h2 id='eachb'>Largest Book:</h2>
+        <h3 id='eachb'>
+            Title:{{largebook.title}}<br>
+                    Publisher:{{largebook.publisher}}<br>
+                    Language:{{largebook.language}}<br>
+                    Date:{{largebook.date}}<br>
+                    Author(s):
+                        {% for author in allAuthors %}
+                            {%if author.ISBN==cheapbook.ISBN%}
+                                {{author.name}},
+                            {%endif%}
+                        {%endfor%}<br>
+                    {%if largebook.stock==0%}
+                        <h3 id='warning'>Out of Stock</h3>
+                    {%endif%}
+        </h3>
+        
+        <div class="toIndex"><form action='/oneBook/{{largebook.ISBN}}/{{user}}'>
+        <input class="viewbutton" type="submit" value="View Book"></form>
+        </div><br>
+    </div>
+</div><br>
+
+<div class="allBook">
+    <div class="eachbook">
+        <h2 id='eachb'>Newest Book:</h2>
+        <h3 id='eachb'>
+            Title:{{latest.title}}<br>
+                    Publisher:{{latest.publisher}}<br>
+                    Language:{{latest.language}}<br>
+                    Date:{{latest.date}}<br>
+                    Author(s):
+                        {% for author in allAuthors %}
+                            {%if author.ISBN==cheapbook.ISBN%}
+                                {{author.name}},
+                            {%endif%}
+                        {%endfor%}<br>
+                    {%if latest.stock==0%}
+                        <h3 id='warning'>Out of Stock</h3>
+                    {%endif%}
+        </h3>
+        
+        <div class="toIndex"><form action='/oneBook/{{latest.ISBN}}/{{user}}'>
+        <input class="viewbutton" type="submit" value="View Book"></form>
+        </div><br>
+    </div>
+</div><br>
+
+<div class="allBook">
+    <div class="eachbook">
+        <h2 id='eachb'>Oldest Book:</h2>
+        <h3 id='eachb'>
+            Title:{{oldest.title}}<br>
+                    Publisher:{{oldest.publisher}}<br>
+                    Language:{{oldest.language}}<br>
+                    Date:{{oldest.date}}<br>
+                    Author(s):
+                        {% for author in allAuthors %}
+                            {%if author.ISBN==cheapbook.ISBN%}
+                                {{author.name}},
+                            {%endif%}
+                        {%endfor%}<br>
+                    {%if oldest.stock==0%}
+                        <h3 id='warning'>Out of Stock</h3>
+                    {%endif%}
+        </h3>
+        
+        <div class="toIndex"><form action='/oneBook/{{oldest.ISBN}}/{{user}}'>
+        <input class="viewbutton" type="submit" value="View Book"></form>
+        </div><br>
+    </div>
+</div><br>
 
 
 

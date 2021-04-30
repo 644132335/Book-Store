@@ -12,8 +12,8 @@
     <a href="/managerAdd">Add Manager</a>
     <a href="/bookAdd">Add Book</a>
     <a href="/customerMana">Customer Manage</a>
-    <a class="active" href="/bookMana">Book Manage</a>
-    <a href="/stat">Statistic</a>
+    <a href="/bookMana">Book Manage</a>
+    <a class="active" href="/stat">Statistic</a>
     
 </div>
 <br>
@@ -35,6 +35,16 @@
             {%for order in popordersb%}
             <h3 id='eachb'>
                 Title:{{order.title}}
+            </h3> 
+            {%endfor%}    
+        </div>
+        <br>
+        <div class="eachbook">
+            <h2 id='eachb'>Top {{toppop}} Most Trusted User(s):</h2>
+            {%for user in trust%}
+            <h3 id='eachb'>
+                Username:{{user.username}}<br>
+                Number of Trust:{{user.trust}}
             </h3> 
             {%endfor%}    
         </div>
