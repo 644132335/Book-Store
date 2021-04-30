@@ -460,5 +460,21 @@ def stat():
 
     return render_template("stat.html",popordersb=popb,toppop=top,trust=trustu)
 
+#degree separation
+@app.route('/degree/<id>',methods=["POST","GET"])
+def degree(id):
+    username=id
+    if request.method=="POST":
+        author=request.form["author"]
+        deg=Author.query.filter(Author.name.like(author))
+        deg1=[]
+        for auth in deg:
+            deg1.extend(Author.query.filter(auth.ISBN==Author.ISBN,~Author.name.like(auth.name)).distinct())
+        
+
+        return render_template('degree.html',degtable=deg1,user=username)
+    else:
+        return render_template('degree.html',user=username)
+
 if __name__ == "__main__":
     app.run(port=8000,debug=True)

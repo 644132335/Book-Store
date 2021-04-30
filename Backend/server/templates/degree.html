@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block head %}
+
+<title>Book Store</title>
+{% endblock %}
+
+{% block body %}
+
+<h1 id="top">Book Store</h1>
+<h3 id="top">Username: {{user}}</h3>
+<div class="toIndex"><form action='/' ><input class="button" type="submit" value="Logout"></form></div><br>
+
+<div class="topnav">
+    <a href="/main/{{user}}">Home</a>
+    <a class="active" href="/degree/{{user}}">Degree Separation</a>
+    <a href="/bookSug/{{user}}">Book Suggestions</a>
+    <a href="/alluser/{{user}}">Other People</a>
+    <a href="/orderInfo/{{user}}">My Orders</a>
+    <a href="/profile/{{user}}">My Profile</a>
+    
+    
+</div>
+<br>
+<div class="allBook">
+
+    <div class="eachbook">
+        
+        <form class="search" action='/degree/{{user}}' method="POST">
+            <h3 style=color:white>Author: <input type="text" name="author"></h3>
+            <input class="viewbutton" type="submit" value="Degree Separate Search">
+        </form>
+        
+    </div>
+</div>
+<br>
+
+<div class="allBook">
+
+    <div class="eachbook">
+        <h2 style="color:white">Degree Separation Authors:</h2>
+        {%for auth in degtable%}
+            <h3 id="eachb">{{auth.name}}</h3><br>
+        {%endfor%}
+    </div>
+</div>
+<br>
+
+
+
+
+
+
+{% endblock %}
